@@ -15,7 +15,7 @@ interface ISignUpData {
     password: string
 }
 
-function page() {
+function SignupPage() {
 
     const [ signUpData, setSignUpData ] = useState<ISignUpData>({userName:'',email:'',password:''});
     const router = useRouter();
@@ -40,8 +40,8 @@ function page() {
             toast.success("Account created successfully")
             router.push('/');
         },
-        onError: () =>{
-            console.log(error);
+        onError: (err) =>{
+            toast.error(err.message);
         }
     });
 
@@ -74,7 +74,6 @@ function page() {
                  id='userName'
                  className='input input-bordered w-full'
                  placeholder='Enter a username for your profile'
-                 suppressHydrationWarning
                  value={signUpData.userName}
                  onChange={(e) => setSignUpData({ ...signUpData,userName:e.target.value})}/>
             </div>
@@ -88,7 +87,6 @@ function page() {
                  id='email'
                  className='input input-bordered w-full'
                  placeholder='Enter your email'
-                 suppressHydrationWarning
                  value={signUpData.email}
                  onChange={(e) => setSignUpData({ ...signUpData,email:e.target.value})}/>
             </div>
@@ -102,7 +100,6 @@ function page() {
                  id='password'
                  className='input border-2 w-full'
                  placeholder='Enter a password'
-                 suppressHydrationWarning
                  value={signUpData.password}
                  onChange={(e) => setSignUpData({ ...signUpData,password:e.target.value})}/>
             </div>
@@ -129,9 +126,10 @@ function page() {
           <div className="max-w-md p-8">
             {/* Illustration */}
             <div className="relative aspect-square max-w-sm mx-auto">
-                <Image src={CoverImg} alt="Img"
-                       sizes="(max-width: 1024px) 100vw, 50vw"
-                       style={{ objectFit: "cover" }} />
+                <Image src={ CoverImg } alt="Img" fill 
+                  style={{ objectFit: "cover" }}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority/>
             </div>
             <div className="text-center space-y-3 mt-6">
               <h2 className='text-xl font-semibold'>Connect with your friends worldwide</h2>
@@ -144,4 +142,4 @@ function page() {
   )
 }
 
-export default page
+export default SignupPage
