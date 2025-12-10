@@ -24,7 +24,7 @@ function page() {
 
       <Header/>
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
 
         <SideBar/>
 

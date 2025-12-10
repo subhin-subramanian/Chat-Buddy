@@ -1,60 +1,101 @@
 "use client"
 
-import { BellIcon, HomeIcon, MessagesSquare, UserIcon } from "lucide-react"
+import { BellIcon, CircleUserRound, HomeIcon, Menu, MessagesSquare, Power, Users, X } from "lucide-react"
 import Link from "next/link"
-import { useQuery } from "@tanstack/react-query";
-import { getMe } from "@/lib/api";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import profileImg  from '../../assets/profileImg.png'
+import { useState } from "react";
 
 function SideBar() {
 
-  const { data:user } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: getMe, 
-  });
-
   const currentPath = usePathname();
+  const [navOpen, setNavOpen] = useState <boolean> (false);
 
   return (
-    <aside className="w-64 bg-base-200 border-r border-base-300 flex flex-col h-screen sticky top-0">
+    <div className="">
+
+    {/* Sidebar for larger screens */}
+    <aside className="hidden md:flex flex-col min-w-64 w-64 bg-base-200 border-r border-base-300 h-screen sticky top-0">
 
       <nav className="flex-1 p-4 space-y-1">
+
         <Link href='/' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/' ? "bg-gray-700" : ""}`}>
           <HomeIcon className="size-5 text-base-content opacity-70"/>
           <span>Home</span>
         </Link>
-        <Link href='/friends' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/friends' ? "bg-gray-700" : ""}`}>
-          <UserIcon className="size-5 text-base-content opacity-70"/>
+
+        <Link href='/frnd-rqsts' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/frnd-rqsts' ? "bg-gray-700" : ""}`}>
+          <Users className="size-5 text-base-content opacity-70"/>
           <span>Friend Requests</span>
         </Link>
+
         <Link href='/notifications' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/notifications' ? "bg-gray-700" : ""}`}>
           <BellIcon className="size-5 text-base-content opacity-70"/>
           <span>Notifications</span>
         </Link>
-        <Link href='/notifications' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/chat' ? "bg-gray-700" : ""}`}>
+
+        <Link href='/chat' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/chat' ? "bg-gray-700" : ""}`}>
           <MessagesSquare className="size-5 text-base-content opacity-70"/>
           <span>Chat</span>
         </Link>
+
+        <Link href='/profile' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/profile' ? "bg-gray-700" : ""}`}>
+          <CircleUserRound className="size-5 text-base-content opacity-70"/>
+          <span>Profile</span>
+        </Link>
+
+        <button className="btn btn-ghost justify-start w-full gap-3 px-3 normal-case">
+          <Power className="size-5 text-base-content opacity-70"/>Power
+        </button>
         
       </nav>
 
-      {/* User Profile Section */}
-      <div className="p-4 border-t border-base-300 mt-auto">
-        <div className="flex items-center gap-3">
-            <Image src={user?.profilePic || profileImg } alt="User Avatar" rel="noreferrer" 
-               className="w-[30px] h-[30px] rounded-full object-cover"/>
-            <div className="flex-1">
-                <p className="font-semibold text-sm">{user?.userName}</p>
-                <p className="text-xs text-success flex items-center gap-1">
-                    <span className="size-2 rounded-full bg-success inline-block">Online</span>
-                </p>
-            </div>
-        </div>
-      </div>
-
     </aside>
+
+    {/* Mobile Button */}
+    <button className="md:hidden absolute top-6 right-2 p-1 outline-2 rounded-lg" onClick={()=>setNavOpen(!navOpen)}>
+      {navOpen ? <X size={18}/> : <Menu size={18}/>}
+    </button>
+
+    {/* Sidebar for smaller screens */}
+    {navOpen && 
+     <aside className="md:hidden w-full flex flex-col bg-base-200 border border-gray-500 rounded-xl ">
+
+      <nav className="flex-1 p-4 space-y-1">
+
+        <Link href='/' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/' ? "bg-gray-700" : ""}`}>
+          <HomeIcon className="size-5 text-base-content opacity-70"/>
+          <span>Home</span>
+        </Link>
+
+        <Link href='/frnd-rqsts' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/frnd-rqsts' ? "bg-gray-700" : ""}`}>
+          <Users className="size-5 text-base-content opacity-70"/>
+          <span>Friend Requests</span>
+        </Link>
+
+        <Link href='/notifications' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/notifications' ? "bg-gray-700" : ""}`}>
+          <BellIcon className="size-5 text-base-content opacity-70"/>
+          <span>Notifications</span>
+        </Link>
+
+        <Link href='/chat' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/chat' ? "bg-gray-700" : ""}`}>
+          <MessagesSquare className="size-5 text-base-content opacity-70"/>
+          <span>Chat</span>
+        </Link>
+
+        <Link href='/profile' className={`btn btn-ghost justify-start w-full gap-3 px-3 normal-case ${currentPath === '/profile' ? "bg-gray-700" : ""}`}>
+          <CircleUserRound className="size-5 text-base-content opacity-70"/>
+          <span>Profile</span>
+        </Link>
+
+        <button className="btn btn-ghost justify-start w-full gap-3 px-3 normal-case">
+          <Power className="size-5 text-base-content opacity-70"/>Power
+        </button>
+        
+      </nav>
+
+    </aside>}
+
+    </div> 
   )
 }
 

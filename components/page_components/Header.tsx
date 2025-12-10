@@ -16,7 +16,7 @@ function Header() {
   });
     
   return (
-    <div className="w-full flex px-10 py-5 justify-between">
+    <div className="w-full flex px-12 sm:px-10 py-5 justify-between">
 
       <Logo/>
 
