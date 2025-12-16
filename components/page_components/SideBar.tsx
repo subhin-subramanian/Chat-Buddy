@@ -44,7 +44,7 @@ function SideBar() {
         </Link>
 
         <button className="btn btn-ghost justify-start w-full gap-3 px-3 normal-case">
-          <Power className="size-5 text-base-content opacity-70"/>Power
+          <Power className="size-5 text-base-content opacity-70"/>Logout
         </button>
         
       </nav>
@@ -88,7 +88,7 @@ function SideBar() {
         </Link>
 
         <button className="btn btn-ghost justify-start w-full gap-3 px-3 normal-case">
-          <Power className="size-5 text-base-content opacity-70"/>Power
+          <Power className="size-5 text-base-content opacity-70"/>Logout
         </button>
         
       </nav>

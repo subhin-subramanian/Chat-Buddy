@@ -8,12 +8,8 @@ import CoverImg from '../../../assets/CoverImg.png'
 import Image from 'next/image';
 import { useRouter } from "next/navigation";
 import toast from 'react-hot-toast';
-
-interface ISignUpData {
-    userName: string,
-    email: string,
-    password: string
-}
+import { signUp } from '@/lib/api';
+import { ISignUpData, ISignUpResponse } from '@/app/types';
 
 function SignupPage() {
 
@@ -21,22 +17,10 @@ function SignupPage() {
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    const {mutate:signUpMutation, isPending, error} = useMutation <void,Error,ISignUpData>({
-        mutationFn: async (signUpData) => {
-            const response = await fetch("/api/auth/signup",{
-                method: 'POST',
-                headers: {
-                    "Content-Type" : "application/json"
-                },
-                body: JSON.stringify(signUpData)
-            });
-            const data = await response.json();
-            if (!response.ok){
-                throw new Error(data.message);
-            }
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["authUser"]});
+    const {mutate:signUpMutation, isPending, error} = useMutation <ISignUpResponse,Error,ISignUpData>({
+        mutationFn: signUp,
+        onSuccess: (data) => {
+            queryClient.setQueryData(["authUser"],data.user);
             toast.success("Account created successfully")
             router.push('/');
         },

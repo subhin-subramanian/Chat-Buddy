@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { DBConnection } from "./db";
 import jwt from "jsonwebtoken";
-import User from "@/models/User";
+import User from "@/models/User.model";
 
 
 export async function verifyToken(token: string){
@@ -23,13 +23,13 @@ export async function verifyToken(token: string){
             return NextResponse.json({ user: null }, { status: 401 });
         }
 
-        const user = await User.findById(decoded.userId).select("-password");
+        const user = await User.findById(decoded.userId).select("userName bio profilePic");
 
         if (!user){
             console.log("User not found")
             return NextResponse.json({ user: null }, { status: 401 });
         }
-
+        
         return user;
 
     } catch (error) {

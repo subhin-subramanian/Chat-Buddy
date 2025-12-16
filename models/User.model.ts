@@ -9,6 +9,8 @@ export interface IUser extends Document {
     bio?: string;
     profilePic?: string;
     friends: mongoose.Types.ObjectId[];
+    sentRequests: mongoose.Types.ObjectId[];
+    receivedRequests: mongoose.Types.ObjectId[];
     isPasswordMatch(enteredPassword:string):Promise<boolean | string>;
 }
 
@@ -38,6 +40,18 @@ const userSchema = new Schema<IUser>(
             default: ""
         },
         friends: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ],
+        sentRequests: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        ],
+        receivedRequests: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'User'

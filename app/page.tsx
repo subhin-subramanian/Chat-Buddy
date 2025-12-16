@@ -5,6 +5,10 @@ import Image from "next/image"
 
 function page() {
 
+  
+
+
+
   let friends = [
     {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
     {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},

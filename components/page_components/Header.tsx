@@ -3,18 +3,35 @@
 import Link from "next/link"
 import Logo from "./Logo"
 import { BellIcon, LogOutIcon } from "lucide-react"
-import Image from "next/image"
-import { useQuery } from "@tanstack/react-query"
-import { getMe } from "@/lib/api"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { getMe, logOut } from "@/lib/api"
 import profileImg  from '../../assets/profileImg.png'
+import { useRouter } from "next/navigation";
 
 function Header() {
 
-  const { data:user } = useQuery({
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
+  const { data:user} = useQuery({
     queryKey: ["authUser"],
     queryFn: getMe,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
   });
-    
+
+  const { mutate:logOutMutation, isPending } = useMutation({
+    mutationFn: logOut,
+    onSuccess: ()=>{
+      queryClient.removeQueries({queryKey:["authUser"]});
+      router.push("/auth/login")
+    }
+  })
+
+  const handleLogout = ()=>{
+     logOutMutation();
+  }
+
   return (
     <div className="w-full flex px-12 sm:px-10 py-5 justify-between">
 
@@ -26,12 +43,14 @@ function Header() {
           </Link>
 
           <Link href='/profile'>
-            <Image src={user?.profilePic || profileImg } alt="User Avatar" rel="noreferrer" 
-              className="w-[30px] h-[30px] rounded-full object-cover"/>
+            <img src={user?.profilePic || profileImg.src} alt="User Avatar"
+                  className="w-[30px] h-[30px] rounded-full object-cover"/>
           </Link>
 
-          <button>
-            <LogOutIcon/>
+          <button className="cursor-pointer">
+            {isPending ?
+              <div className="h-8 w-8 rounded-full border border-blue-300 border-t-blue-600 animate-spin"></div> :
+            <LogOutIcon onClick={handleLogout}/>}
           </button>
       </div>
 
