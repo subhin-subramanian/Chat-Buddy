@@ -20,7 +20,7 @@
     const {mutate:logInMutation, isPending, error} = useMutation <ILoginResponse,Error,ILogInData>({
         mutationFn: login,
         onSuccess: (data) => {
-            queryClient.setQueryData(["authUser"], data.user);
+            queryClient.setQueryData(["auth", "user"], data.user);
             toast.success("Logged In");
             router.push('/');
         },

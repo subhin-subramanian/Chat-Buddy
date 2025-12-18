@@ -1,5 +1,6 @@
 "use client"
 
+import useLogout from "@/hooks/useLogout";
 import { BellIcon, CircleUserRound, HomeIcon, Menu, MessagesSquare, Power, Users, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation";
@@ -9,6 +10,11 @@ function SideBar() {
 
   const currentPath = usePathname();
   const [navOpen, setNavOpen] = useState <boolean> (false);
+  const { mutate:logOutMutation, isPending } = useLogout();
+
+  const handleLogout = () => {
+    logOutMutation();
+  }
 
   return (
     <div className="">
@@ -43,8 +49,9 @@ function SideBar() {
           <span>Profile</span>
         </Link>
 
-        <button className="btn btn-ghost justify-start w-full gap-3 px-3 normal-case">
-          <Power className="size-5 text-base-content opacity-70"/>Logout
+        <button className="btn btn-ghost justify-start w-full gap-3 px-3 normal-case"
+                onClick={handleLogout}>
+          <Power className="size-5 text-base-content opacity-70"/>{ isPending ? "Loggingout..." : "Logout"}
         </button>
         
       </nav>

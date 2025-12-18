@@ -14,17 +14,17 @@ function page() {
   const queryClient = useQueryClient();
 
   const { data:friends=[] } = useQuery({
-    queryKey: ["friends"],
+    queryKey: ["auth", "friends"],
     queryFn: getMyFriends
   });
   
   const { data:FrndsRccmnded=[] } = useQuery({
-    queryKey: [ "FrndsRccmnded"],
+    queryKey: [ "auth", "FrndsRccmnded"],
     queryFn: friendsReccomendation
   });
 
   const { data:FrndRqstsSend=[] } = useQuery({
-    queryKey: ["FrndRqstsSend"],
+    queryKey: ["auth", "FrndRqstsSend"],
     queryFn: getsendFrndRqsts
   })
 
@@ -32,7 +32,7 @@ function page() {
     mutationFn: sendFrndRqst,
     onSuccess:()=>{
       toast.success("Friend request send");
-      queryClient.invalidateQueries({queryKey:["FrndRqstsSend"]});
+      queryClient.invalidateQueries({queryKey:["auth", "FrndRqstsSend"]});
     },
     onError:(error)=>{
       toast.error(error.message);

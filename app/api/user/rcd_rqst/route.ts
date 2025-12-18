@@ -3,6 +3,7 @@ import { verifyToken } from "@/lib/verifyToken";
 import User from "@/models/User.model";
 import { NextRequest, NextResponse } from "next/server";
 
+// -------- Function to get all the friend requests received ------- //
 export async function GET(req: NextRequest){
     try {
         await DBConnection();
@@ -12,22 +13,15 @@ export async function GET(req: NextRequest){
             return NextResponse.json({ message: "No token"}, { status: 401 });
         }
 
-        const currentUser = await verifyToken(token);
+        const userfromToken = await verifyToken(token);
 
-        if(!currentUser){
+        if(!userfromToken){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const user = await User.findById(currentUser._id).select("friends sendRequests receivedRequests");
-        if (!user){
-            return NextResponse.json({message:"User not found"},{ status:404 })
-        }
+        const user = await User.findById(userfromToken._id).populate("receivedRequests","userName bio profilePic")
 
-        const excludedIds = [currentUser._id, ...user.friends, ...user.sendRequests, ...user.receivedRequests];
-        
-        const friendsRcmnded = await User.find({_id:{ $nin:excludedIds }}).select("userName bio profilePic");
-
-        return NextResponse.json({friendsRcmnded},{status:200});
+        return NextResponse.json({receivedRqsts:user?.receivedRequests},{status:201});
 
     } catch (err) {
         console.error("Server error:", err);

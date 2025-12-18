@@ -7,26 +7,19 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getMe, logOut } from "@/lib/api"
 import profileImg  from '../../assets/profileImg.png'
 import { useRouter } from "next/navigation";
+import useLogout from "@/hooks/useLogout"
 
 function Header() {
 
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const { mutate:logOutMutation, isPending} = useLogout();
 
   const { data:user} = useQuery({
-    queryKey: ["authUser"],
+    queryKey: ["auth", "user"],
     queryFn: getMe,
     staleTime: 1000 * 60 * 5,
     retry: false,
   });
-
-  const { mutate:logOutMutation, isPending } = useMutation({
-    mutationFn: logOut,
-    onSuccess: ()=>{
-      queryClient.removeQueries({queryKey:["authUser"]});
-      router.push("/auth/login")
-    }
-  })
 
   const handleLogout = ()=>{
      logOutMutation();

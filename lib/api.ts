@@ -1,4 +1,5 @@
 import { ILogInData, ILoginResponse, ISignUpData, ISignUpResponse } from "@/app/types";
+import toast from "react-hot-toast";
 
 
 export const signUp = async (signUpData:ISignUpData):Promise<ISignUpResponse> => {
@@ -11,6 +12,7 @@ export const signUp = async (signUpData:ISignUpData):Promise<ISignUpResponse> =>
     });
     const data = await response.json();
     if (!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message);
     }
     return data;
@@ -27,6 +29,7 @@ export const login = async (logInData:ILogInData):Promise<ILoginResponse> => {
     });
     const data = await response.json();
     if (!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message || "Login failed");
     }
      return data;
@@ -40,6 +43,7 @@ export const getMe = async () => {
     const data = await response.json();
 
     if(!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message)
     }
 
@@ -54,6 +58,7 @@ export const logOut = async () => {
         credentials:"include"});
 
     if (!response.ok) {
+        toast.error("OOPS something went wrong");
         throw new Error("Logout failed");
     }
 }
@@ -64,6 +69,7 @@ export const getMyFriends = async () => {
     const data = await response.json();
 
     if(!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message)
     }
 
@@ -76,46 +82,96 @@ export const friendsReccomendation = async () => {
     const data = await response.json();
 
     if(!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message)
     }
 
     return data.friendsRcmnded;
 }
 
+// --------- Function to fetch all the friends request user send ---------- //
 export const getsendFrndRqsts = async () => {
     const response = await fetch('/api/user/send_rqst',{credentials:"include"});
 
     const data = await response.json();
 
     if(!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message)
     }
 
     return data.sendRqsts;
 }
 
-export const sendFrndRqst = async (userId:string) => {
+// --------- Function to fetch all the friends request the user received---------- //
+export const receivedFrndRqsts = async () => {
+    const response = await fetch('/api/user/rcd_rqst',{credentials:"include"});
+
+    const data = await response.json();
+
+    if(!response.ok){
+        toast.error("OOPS something went wrong");
+        throw new Error(data.message)
+    }
+
+    return data.receivedRqsts;
+}
+
+// --------- Function to send a new friend request ---------- //
+export const sendFrndRqst = async (receiverId:string) => {
     const response = await fetch('/api/user/send_rqst',{ 
         method:"POST", 
         credentials:"include",
         headers: {
             "Content-Type" : "application/json"
         },
-        body: JSON.stringify(userId)
+        body: JSON.stringify({receiverId})
     });
 
     const data = await response.json();
 
     if(!response.ok){
+        toast.error("OOPS something went wrong");
         throw new Error(data.message)
     }
 }
 
-export const acceptFrndRqst = async () => {}
+export const acceptFrndRqst = async (senderId:string) => {
+     const response = await fetch('/api/user/rcd_rqst/accept',{
+        method:"POST", 
+        credentials:"include",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({senderId})
+    });
 
-export const rejectFrndRqst = async () => {}
+    const data = await response.json();
 
-export const receivedFrndRqsts = async () => {}
+    if(!response.ok){
+        toast.error("OOPS something went wrong");
+        throw new Error(data.message);
+    }
+}
+
+export const rejectFrndRqst = async (senderId:string) => {
+     const response = await fetch('/api/user/rcd_rqst/reject',{
+        method:"DELETE", 
+        credentials:"include",
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({senderId})
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+        toast.error("OOPS something went wrong");
+        throw new Error(data.message)
+    }
+}
+
 
 
 

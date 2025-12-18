@@ -46,7 +46,10 @@ export async function POST(req: NextRequest){
         }
 
         const senderId = userfromToken?._id;
-        const receiverId = await req.json();
+        const { receiverId } = await req.json();
+        if(!receiverId) {
+            return NextResponse.json({ message:"ReceiverId missing"},{ status:400 })
+        }
 
         // Prevent send request to yourself
         if (senderId === receiverId){

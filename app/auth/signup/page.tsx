@@ -20,7 +20,7 @@ function SignupPage() {
     const {mutate:signUpMutation, isPending, error} = useMutation <ISignUpResponse,Error,ISignUpData>({
         mutationFn: signUp,
         onSuccess: (data) => {
-            queryClient.setQueryData(["authUser"],data.user);
+            queryClient.setQueryData(["auth", "user"],data.user);
             toast.success("Account created successfully")
             router.push('/');
         },
