@@ -3,8 +3,15 @@ import Header from "@/components/page_components/Header"
 import SideBar from "@/components/page_components/SideBar"
 import profileImg from '../../assets/profileImg.png'
 import Image from "next/image"
+import { receivedFrndRqsts } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 function page() {
+
+  const { data:myFriendRqsts } = useQuery({
+  queryKey: [ "rcvdFrndRqsts" ],
+  queryFn: receivedFrndRqsts
+  });
 
   let friends = [
     {_id:1, userName:"username", profilePic:profileImg, date:"12/5/10"},

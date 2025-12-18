@@ -18,9 +18,17 @@ export async function GET(req: NextRequest){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const user = await User.findById(userfromToken._id).populate("friends", "userName profilePic bio");
+        const user = await User.findById(userfromToken._id).select("friends");
+        const userFriends = user?.friends;
 
-        return NextResponse.json({friends:user?.friends},{status:200});
+        const friendsRcmnded = await User.find({
+            _id:{
+                $ne:userfromToken._id,
+                $nin:userFriends
+            }
+        }).select("userName bio profilePic");
+
+        return NextResponse.json({friendsRcmnded},{status:200});
 
     } catch (err) {
         console.error("Server error:", err);

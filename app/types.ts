@@ -23,3 +23,10 @@
   export interface ISignUpResponse {
     user: IUserBasic;
   }
+
+  export interface IFriend {
+    _id:string;
+    userName: string;
+    profilePic: string;
+    bio: string
+  }
