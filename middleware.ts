@@ -18,15 +18,33 @@ async function verifyJwt(token:string): Promise<JWTPayload | null> {
 export async function middleware(req: NextRequest) {
 
     const token = req.cookies.get('jwt')?.value;
+    const pathname = req.nextUrl.pathname;
 
-    const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
+    const isAuthPage = pathname.startsWith("/auth");
+    const isApiRoute = pathname.startsWith("/api");
+    const isPublicApi = pathname.startsWith("/api/auth/login") || pathname.startsWith("/api/auth/signup");
 
     const payload = token ? await verifyJwt(token) : null;
 
+    // Allow public auth APIs
+    if (isApiRoute && isPublicApi) {
+        return NextResponse.next();
+    }
+
+    //  API + no token → 401 JSON
+    if (isApiRoute && !payload) {
+        return new NextResponse(
+        JSON.stringify({ message: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+        );
+    }
+
+    // Page + no token → redirect
     if (!payload && !isAuthPage) {
         return NextResponse.redirect(new URL("/auth/login",req.url));
     }
-
+    
+    // Logged-in user visiting auth pages
     if (payload && isAuthPage) {
         return NextResponse.redirect(new URL ("/",req.url));
     }
@@ -41,5 +59,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|favicon.ico).*)"],
+  matcher: ["/((?!_next|favicon.ico).*)"],
 };

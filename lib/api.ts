@@ -18,7 +18,6 @@ export const signUp = async (signUpData:ISignUpData):Promise<ISignUpResponse> =>
     return data;
 }
 
-
 export const login = async (logInData:ILogInData):Promise<ILoginResponse> => {
     const response = await fetch("/api/auth/login",{
         method: 'POST',
@@ -41,6 +40,11 @@ export const getMe = async () => {
     const response = await fetch('/api/user',{credentials:"include"});
 
     const data = await response.json();
+    
+    // To handle the edge case of middleware.ts (not logged in not means as error)
+    if (response.status === 401) {
+        return null;
+    }
 
     if(!response.ok){
         toast.error("OOPS something went wrong");

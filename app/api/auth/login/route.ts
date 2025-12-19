@@ -9,6 +9,7 @@ export async function POST(req: NextRequest){
         await DBConnection();
 
         const body = await req.json();
+        
         const { email,password} = body ?? {};
 
         if (!email || email === '' || !password || password === ''){
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest){
         }
 
         // Email checking
-        const user = await User.findOne({ email : email.toLowerCase().trim() });
+        const user = await User.findOne({ email : email.toLowerCase().trim()}).select("_id userName bio profilePic password");
         if(!user){
             return NextResponse.json({message:"Invalid credentials"},{status:401});
         }
@@ -32,12 +33,16 @@ export async function POST(req: NextRequest){
         }
 
         // Creating jwt token
-        const token = jwt.sign({userId:user._id.toString()}, process.env.JWT_SECRET as string, {expiresIn: "1h"});
+        const token = jwt.sign({userId:user._id.toString()}, process.env.JWT_SECRET as string, {expiresIn: "7d"});
 
-        const userObj = user.toObject();
-        delete userObj.password;
+        const safeUser = {
+            _id: user._id,
+            userName: user.userName,
+            bio: user.bio,
+            profilePic: user.profilePic,
+        }
 
-        const res = NextResponse.json({message: "Logged in success", user:userObj},{status:200});
+        const res = NextResponse.json({message: "Logged in success", user:safeUser},{status:200});
 
         // Cookie setting
         res.cookies.set("jwt",token,{
