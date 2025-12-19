@@ -1,24 +1,23 @@
 import { DBConnection } from "@/lib/db";
-import { verifyToken } from "@/lib/verifyToken";
 import User from "@/models/User.model";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest){
     try {
+        const currentUserId = (await headers()).get("x-user-id");
+
         await DBConnection();
-        const token = req.cookies.get("jwt")?.value;
-        
-        if(!token){
-            return NextResponse.json({ message: "No token"}, { status: 401 });
-        }
 
-        const userfromToken = await verifyToken(token);
-
-        if(!userfromToken){
+        if(!currentUserId){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const user = await User.findById(userfromToken._id).populate("friends", "userName profilePic bio");
+        const user = await User.findById(currentUserId).populate("friends", "userName profilePic bio");
+        
+        if (!user) {
+            return NextResponse.json({message:"User not found"},{ status:404 });
+        }
 
         return NextResponse.json({friends:user?.friends},{status:200});
 

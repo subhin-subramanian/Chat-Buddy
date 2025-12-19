@@ -1,25 +1,24 @@
 import { DBConnection } from "@/lib/db";
-import { verifyToken } from "@/lib/verifyToken";
 import User from "@/models/User.model";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 // -------- Function to get all the friend requests send for rendering purpose of the button in the home page ------- //
-export async function GET(req: NextRequest){
-    try {
+export async function GET(){
+    try {  
+        const currentUserId = (await headers()).get("x-user-id");
+
         await DBConnection();
-        const token = req.cookies.get("jwt")?.value;
-        
-        if(!token){
-            return NextResponse.json({ message: "No token"}, { status: 401 });
-        }
 
-        const userfromToken = await verifyToken(token);
-
-        if(!userfromToken){
+        if(!currentUserId){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const user = await User.findById(userfromToken._id).select("sendRequests")
+        const user = await User.findById(currentUserId).select("sendRequests")
+        
+        if (!user) {
+            return NextResponse.json({message:"User not found"},{ status:404 });
+        }
 
         return NextResponse.json({sendRqsts:user?.sendRequests},{status:200});
 
@@ -32,24 +31,22 @@ export async function GET(req: NextRequest){
 // ----- Function to send a new friend request ----- //
 export async function POST(req: NextRequest){
     try {
+        const currentUserId = (await headers()).get("x-user-id");
+
         await DBConnection();
-        const token = req.cookies.get("jwt")?.value;
-        
-        if(!token){
-            return NextResponse.json({ message: "No token"}, { status: 401 });
-        }
 
-        const userfromToken = await verifyToken(token);
-
-         if(!userfromToken){
+        if(!currentUserId){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const senderId = userfromToken?._id;
-        const { receiverId } = await req.json();
-        if(!receiverId) {
-            return NextResponse.json({ message:"ReceiverId missing"},{ status:400 })
+        const user = await User.findById(currentUserId).select("sendRequests")
+        
+        if (!user) {
+            return NextResponse.json({message:"User not found"},{ status:404 });
         }
+
+        const senderId = currentUserId;
+        const { receiverId } = await req.json();
 
         // Prevent send request to yourself
         if (senderId === receiverId){
@@ -61,7 +58,10 @@ export async function POST(req: NextRequest){
             return NextResponse.json({message: "Receiver not existed"},{ status:400 });
         }
 
-        const sender = await User.findById(userfromToken._id).select("friends sendRequests receivedRequests");
+        const sender = await User.findById(senderId).select("friends sendRequests receivedRequests");
+        if (!sender){
+            return NextResponse.json({message: "user not found"},{ status:404 });
+        }
         
         // Check if you're already send a request to the recipient or viceversa
         if (sender?.sendRequests?.includes(receiverId)) {

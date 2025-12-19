@@ -1,29 +1,25 @@
 import { DBConnection } from "@/lib/db";
-import { verifyToken } from "@/lib/verifyToken";
 import User from "@/models/User.model";
-import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest){
+export async function GET(){
     try {
-        await DBConnection();
-        const token = req.cookies.get("jwt")?.value;
-        
-        if(!token){
-            return NextResponse.json({ message: "No token"}, { status: 401 });
-        }
+        const currentUserId = (await headers()).get("x-user-id");
 
-        const currentUser = await verifyToken(token);
+         await DBConnection();
 
-        if(!currentUser){
+        if(!currentUserId){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
-
-        const user = await User.findById(currentUser._id).select("friends sendRequests receivedRequests");
+        
+        const user = await User.findById(currentUserId).select("friends sendRequests receivedRequests");
+      
         if (!user){
             return NextResponse.json({message:"User not found"},{ status:404 })
         }
 
-        const excludedIds = [currentUser._id, ...user.friends, ...user.sendRequests, ...user.receivedRequests];
+        const excludedIds = [currentUserId, ...user.friends, ...user.sendRequests, ...user.receivedRequests];
         
         const friendsRcmnded = await User.find({_id:{ $nin:excludedIds }}).select("userName bio profilePic");
 

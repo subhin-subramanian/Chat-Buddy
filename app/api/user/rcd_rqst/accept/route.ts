@@ -1,20 +1,22 @@
 import { DBConnection } from "@/lib/db";
-import { verifyToken } from "@/lib/verifyToken";
 import User from "@/models/User.model";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req:NextRequest){
     try {
+        const currentUserId = (await headers()).get("x-user-id");
+
         await DBConnection();
 
-        const token = req.cookies.get("jwt")?.value;
-        if(!token){
-            return NextResponse.json({ message: "No token"}, { status: 401 });
+        if(!currentUserId){
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const currentUser = await verifyToken(token);
-        if (!currentUser){
-            return NextResponse.json({ message: "Unauthorized"},{ status:401 });
+        const user = await User.findById(currentUserId).select("_id userName bio profilePic");
+        
+        if (!user) {
+            return NextResponse.json({message:"User not found"},{ status:404 });
         }
 
         const { senderId } = await req.json();
@@ -24,23 +26,23 @@ export async function POST(req:NextRequest){
 
         // Ensure request exists
         const hasRequest = await User.findOne({
-            _id:currentUser._id,
+            _id:currentUserId,
             receivedRequests:senderId
         });
         if (!hasRequest){
             return NextResponse.json({message:"Request not found"},{ status:400 });
         }
-        
+
         // Update friends list and receivedRequests of the currentUser/receiver
-        await User.findByIdAndUpdate(currentUser._id,{
+        await User.findByIdAndUpdate(currentUserId,{
             $pull:{receivedRequests:senderId},
             $addToSet:{friends:senderId}
         });
 
         // Update friends list and sendRequests of the sender
         await User.findByIdAndUpdate(senderId,{
-            $pull:{sendRequests:currentUser._id},
-            $addToSet:{friends:currentUser._id}
+            $pull:{sendRequests:currentUserId},
+            $addToSet:{friends:currentUserId}
         });
 
         return NextResponse.json({message:"Friend added"},{status:200});

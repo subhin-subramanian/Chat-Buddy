@@ -3,15 +3,13 @@
 import Link from "next/link"
 import Logo from "./Logo"
 import { BellIcon, LogOutIcon } from "lucide-react"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { getMe, logOut } from "@/lib/api"
+import { useQuery} from "@tanstack/react-query"
+import { getMe } from "@/lib/api"
 import profileImg  from '../../assets/profileImg.png'
-import { useRouter } from "next/navigation";
 import useLogout from "@/hooks/useLogout"
 
 function Header() {
 
-  const queryClient = useQueryClient();
   const { mutate:logOutMutation, isPending} = useLogout();
 
   const { data:user} = useQuery({

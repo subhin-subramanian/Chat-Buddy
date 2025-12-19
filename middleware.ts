@@ -1,33 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { JWTPayload, jwtVerify, } from "jose";
 
-async function verifyJwt(token:string){
+async function verifyJwt(token:string): Promise<JWTPayload | null> {
     try {
-        const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-        await jwtVerify(token,secret);
-        return true;
+        const secretKey = process.env.JWT_SECRET;
+        if (!secretKey) throw new Error("JWT_SECRET missing");
+
+        const secret = new TextEncoder().encode(secretKey);
+        const { payload } = await jwtVerify(token,secret);
+        return payload;
     } catch {
-        return false;
+        return null;
     }
 }
 
 export async function middleware(req: NextRequest) {
 
-    const token = req.cookies.get('jwt')?.value || null;
+    const token = req.cookies.get('jwt')?.value;
+
     const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
 
-    let isValidToken = false;
-    if (token){
-        isValidToken = await verifyJwt(token);
-    }
+    const payload = token ? await verifyJwt(token) : null;
 
-    if (!isValidToken && !isAuthPage) {
+    if (!payload && !isAuthPage) {
         return NextResponse.redirect(new URL("/auth/login",req.url));
     }
 
-    if (isValidToken && isAuthPage) {
+    if (payload && isAuthPage) {
         return NextResponse.redirect(new URL ("/",req.url));
+    }
+
+    if (payload) {
+        const headers = new Headers(req.headers);
+        headers.set("x-user-id",payload.userId as string);
+        return NextResponse.next({request:{headers}});
     }
 
     return NextResponse.next();
