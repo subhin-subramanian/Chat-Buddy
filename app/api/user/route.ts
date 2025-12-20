@@ -14,7 +14,7 @@ export async function GET(){
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const user = await User.findById(currentUserId).select("_id userName bio profilePic");
+        const user = await User.findById(currentUserId).select("userName bio profilePic");
         
         if (!user) {
             return NextResponse.json({message:"User not found"},{ status:404 });

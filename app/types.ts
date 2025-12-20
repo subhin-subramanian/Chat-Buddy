@@ -30,3 +30,10 @@
     profilePic: string;
     bio: string
   }
+
+  export interface IProfileData {
+      userName: string,
+      email: string,
+      bio: string,
+      profilePic: string
+  }

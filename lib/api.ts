@@ -1,4 +1,4 @@
-import { ILogInData, ILoginResponse, ISignUpData, ISignUpResponse } from "@/app/types";
+import { ILogInData, ILoginResponse, IProfileData, ISignUpData, ISignUpResponse } from "@/app/types";
 import toast from "react-hot-toast";
 
 
@@ -174,6 +174,48 @@ export const rejectFrndRqst = async (senderId:string) => {
         toast.error("OOPS something went wrong");
         throw new Error(data.message)
     }
+}
+
+// ----- Getting userdetails for the profile page ----- //
+export const getUserDetails = async () =>{
+    const response = await fetch('/api/profile',{credentials:"include"});
+
+    const data = await response.json();
+    
+    // To handle the edge case of middleware.ts (not logged in not means as error)
+    if (response.status === 401) {
+        return null;
+    }
+
+    if(!response.ok){
+        toast.error("OOPS something went wrong");
+        throw new Error(data.message)
+    }
+
+    return data.user;
+}
+
+// ----- Function to update profile ----- //
+export const updateProfile = async (profileData : IProfileData) => {
+    const response = await fetch("/api/profile",{
+        method: 'PATCH',
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify(profileData)
+    });
+    const data = await response.json();
+
+    // To handle the edge case of middleware.ts (not logged in not means as error)
+    if (response.status === 401) {
+        return null;
+    }
+
+    if (!response.ok){
+        toast.error("OOPS something went wrong");
+        throw new Error(data.message || "Login failed");
+    }
+     return data.updatedUser;
 }
 
 

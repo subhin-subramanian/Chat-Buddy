@@ -4,39 +4,56 @@ import Header from "@/components/page_components/Header"
 import SideBar from "@/components/page_components/SideBar"
 import profileImg from '../../assets/profileImg.png'
 import Image from "next/image"
-import { useState } from "react"
-
-interface IProfileData {
-    userName: string,
-    email: string,
-    password: string,
-    bio: string,
-    profilePic: string
-}
+import { FormEvent, useEffect, useState } from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { getUserDetails, updateProfile } from "@/lib/api"
+import { IProfileData } from "../types"
+import toast from "react-hot-toast"
 
 function page() {
-
-  let friends = [
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"}
-  ]
-
-  let users = [
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"},
-    {_id:1, userName:"username", profilePic:profileImg, bio: "Hello this is my bio"}
-  ]
 
   const [ profileData, setProfileData ] = useState <IProfileData> ({ 
     userName: '',
     email: '', 
-    password: '',
     bio: '',
     profilePic: ''
   });
+  const queryClient = useQueryClient();
+
+  const { data:user } = useQuery({
+    queryKey: ["auth", "updateUser"],
+    queryFn: getUserDetails,
+    staleTime: 1000 * 60 * 5,
+    retry: false
+  });
+
+  useEffect(()=>{
+    if (!user) return;
+    setProfileData(prev => ({
+      ...prev,  
+    userName: user.userName,
+    email: user.email, 
+    bio: user.bio ?? "",
+    profilePic: user.profilePic ?? profileImg
+  }));
+  },[user])
+
+  const { mutate:updateProfileMutation,isPending,error } = useMutation <IProfileData,Error,IProfileData>({
+    mutationFn: updateProfile,
+    onSuccess:() =>{
+      queryClient.invalidateQueries({queryKey:["auth", "user"]});
+      queryClient.invalidateQueries({queryKey:["auth", "updateUser"]});
+      toast.success("Profile updated");
+    },
+    onError:(error) =>{
+      toast.error(error.message);
+    }
+  }) 
+
+  const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    updateProfileMutation(profileData);
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -47,11 +64,11 @@ function page() {
 
         <SideBar/>
 
-        <div className="mx-auto m-8">
-          <form className="shadow-2xl shadow-blue-500 rounded-2xl w-sm sm:w-xl space-y-10 p-5 md:p-15">
+        <div className="mx-auto p-10 sm:p-0">
+          <form onSubmit={handleSubmit} className="shadow-2xl shadow-blue-500 rounded-2xl w-sm sm:w-md space-y-3 p-5 md:p-10">
             
             {/* ProfilePicture */}
-            <div className="w-30 h-30 rounded-full overflow-hidden mx-auto">
+            <div className="w-20 h-20 rounded-full overflow-hidden mx-auto">
               <Image src={profileData.profilePic || profileImg} alt="ProfileImg" 
                      width={80} height={80} className="w-full h-full object-cover"/> 
             </div>
@@ -65,7 +82,6 @@ function page() {
                   type="text" 
                   id='userName'
                   className='input input-bordered w-full'
-                  placeholder='Change your username'
                   value={profileData.userName}
                   onChange={(e) => setProfileData({ ...profileData,userName:e.target.value})}/>
             </div>
@@ -79,23 +95,8 @@ function page() {
                   type='email'
                   id='email'
                   className='input input-bordered w-full'
-                  placeholder='Enter your email'
                   value={profileData.email}
                   onChange={(e) => setProfileData({ ...profileData,email:e.target.value})}/>
-            </div>
-
-            {/* Password */}
-            <div className="w-full">
-              <label className="label" htmlFor='password'>
-                <span className="label-text">Password</span>
-              </label>
-              <input 
-                  type='password'
-                  id='password'
-                  className='input border-2 w-full'
-                  placeholder='Enter a password'
-                  value={profileData.password}
-                  onChange={(e) => setProfileData({ ...profileData,password:e.target.value})}/>
             </div>
 
             {/* Bio */}
@@ -110,14 +111,13 @@ function page() {
                   value={profileData.bio}
                   onChange={(e) => setProfileData({ ...profileData,bio:e.target.value})}/>
             </div>
-            <button className='btn btn-primary w-full'>Update</button>
 
-            {/* <button className='btn btn-primary w-full' type='submit'>
+            <button className='btn btn-primary w-full' type='submit'>
                   {isPending ? 
                   <>
                     <span className='loading loading-spinner loading-xs'>Updating Profile....</span>
                   </>: "Update"}
-            </button> */}
+            </button> 
 
           </form>
         </div>
