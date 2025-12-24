@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProvider from "./providers/query-provider";
 import { Toaster } from "react-hot-toast";
 import AuthProvider from "./providers/AuthProvider";
+import "stream-chat-react/dist/css/v2/index.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

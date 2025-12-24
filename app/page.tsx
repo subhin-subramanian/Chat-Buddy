@@ -8,6 +8,7 @@ import { friendsReccomendation, getMyFriends, getsendFrndRqsts, sendFrndRqst } f
 import { IFriend } from "./types"
 import Image from "next/image"
 import toast from "react-hot-toast"
+import Link from "next/link"
 
 function page() {
 
@@ -76,8 +77,8 @@ function page() {
                     <h3 className="font-semibold truncate">{friend.userName}</h3>
                     </div>
                     <p className="opacity-50 text-sm truncate">{friend?.bio}</p>
-                    <button className="mx-auto rounded-2xl transition-transform duration-300 ease-in-out 
-                      hover:scale-110 outline px-6 py-1 outline-gray-400">Message</button>
+                    <Link href={`/chat/${friend._id}`} className="mx-auto rounded-2xl transition-transform duration-300 ease-in-out 
+                      hover:scale-110 outline px-6 py-1 outline-gray-400">Message</Link>
                   </div>
                 ))}
               </div>

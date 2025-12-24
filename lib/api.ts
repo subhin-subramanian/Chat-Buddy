@@ -54,7 +54,6 @@ export const getMe = async () => {
     return data.user;
 }
 
-
 export const logOut = async () => {
 
     const response = await fetch('/api/auth/log-out',{
@@ -216,6 +215,19 @@ export const updateProfile = async (profileData : IProfileData) => {
         throw new Error(data.message || "Login failed");
     }
      return data.updatedUser;
+}
+
+// ----- Function to get the stream Token ----- //
+export const getStreamToken = async () => {
+    const response = await fetch("/api/stream/token");
+    
+    const data = await response.json();
+
+    if(!response.ok){
+        throw new Error("Failed to get stream token",data.message);
+    }
+
+    return data;
 }
 
 

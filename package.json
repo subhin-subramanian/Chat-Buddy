@@ -25,6 +25,8 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hot-toast": "^2.6.0",
+    "stream-chat": "^9.27.2",
+    "stream-chat-react": "^13.13.1",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "validator": "^13.15.23",

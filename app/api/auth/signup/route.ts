@@ -3,6 +3,7 @@ import User from "@/models/User.model";
 import { NextRequest, NextResponse } from "next/server";
 import validator from 'validator';
 import jwt from 'jsonwebtoken';
+import { upsertStreamUser } from "@/lib/stream";
 
 export async function POST(req:NextRequest){
     try {
@@ -41,6 +42,18 @@ export async function POST(req:NextRequest){
             profilePic : randomAvatar
         });
         await newUser.save();
+
+        // Save new user in stream
+        try {
+            await upsertStreamUser({
+                id: newUser._id.toString(), 
+                name: newUser.userName, 
+                image: newUser.profilePic ?? ''
+            });
+            console.log(`stream user created for ${newUser.userName}`)
+        } catch (error) {
+            console.log("Error in creating stream user", error);
+        }
 
         // Creating jwt token
         const token = jwt.sign({userId:newUser._id.toString()}, process.env.JWT_SECRET as string, {expiresIn: "1h"});
