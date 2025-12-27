@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat'
 import { Chat,ChannelList, Channel, MessageList, MessageInput, ChannelHeader, Window, Thread } from 'stream-chat-react';
 import "stream-chat-react/dist/css/v2/index.css";
+import FriendsList from '../FriendsList';
 
 const streamChatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!
@@ -17,7 +18,7 @@ function ChatClient({targetUserId}:{targetUserId:string}) {
   const [ channel, setChannel ] = useState <any> (null);
   
   const { data, isPending, isError } = useQuery({
-    queryKey: ["streamToken"],
+    queryKey: ["auth", "streamToken"],
     queryFn: getStreamToken,
     staleTime: Infinity
   });
@@ -76,13 +77,9 @@ function ChatClient({targetUserId}:{targetUserId:string}) {
   }
 
   return (
-    <div className='flex flex-col'>
         
-      <Header/>
-
-      <div className="h-[80vh] bg-black p-10 px-[20vw]">
-       <div className="h-full rounded-xl overflow-hidden border border-gray-800">
         <Chat client={streamChatClient} theme="str-chat__theme-dark">
+      
           <Channel channel={channel}>
            
               <Window >
@@ -94,10 +91,6 @@ function ChatClient({targetUserId}:{targetUserId:string}) {
               <Thread /> 
           </Channel>
         </Chat>
-       </div>
-      </div>
-
-    </div>
   )
 }
 

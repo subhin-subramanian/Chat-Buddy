@@ -6,7 +6,6 @@ import profileImg  from '../assets/profileImg.png'
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { friendsReccomendation, getMyFriends, getsendFrndRqsts, sendFrndRqst } from "@/lib/api"
 import { IFriend } from "./types"
-import Image from "next/image"
 import toast from "react-hot-toast"
 import Link from "next/link"
 
@@ -45,7 +44,7 @@ function page() {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col pt-16">
 
       <Header/>
 
@@ -53,12 +52,12 @@ function page() {
 
         <SideBar/>
 
-        <div className="container mx-auto space-y-10 p-4 sm:p-6 lg:p-8">
+        <div className="container mx-auto space-y-10 p-10 sm:p-6 lg:p-8 bg-base-200 min-h-screen">
           {/* Friends section */}
-          <section>
+          <section className="shadow-gray-700 shadow-md p-4">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Your Friends</h2>
             {friends.length === 0 ? (
-               <div className="bg-base-200 p-6 text-center">
+               <div className="p-6 text-center">
                   <h3 className="font-semibold text-lg mb-2">No Friends Yet</h3>
                </div>
             ) : (
@@ -67,13 +66,17 @@ function page() {
                   <div className="bg-base-200 border border-gray-600 rounded-xl hover:shadow-md 
                                   transition-shadow p-4 flex flex-col gap-3" key={friend._id}>
                     <div className="flex items-center gap-3 mb-3">
-                      <Image
-                      src={friend.profilePic && friend.profilePic.trim() !== "" ? friend.profilePic : profileImg }
-                      alt="Avatar"
-                      width={30}
-                      height={30}
-                      className="rounded-full object-cover"
-                    />
+                      <img
+                        src={friend.profilePic?.trim() || profileImg.src}
+                        alt="Avatar"
+                        className="w-[30px] h-[30px] rounded-full object-cover"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          if (img.src !== profileImg.src) {
+                            img.src = profileImg.src;
+                          }
+                        }}
+                      />
                     <h3 className="font-semibold truncate">{friend.userName}</h3>
                     </div>
                     <p className="opacity-50 text-sm truncate">{friend?.bio}</p>
@@ -86,20 +89,23 @@ function page() {
           </section>
 
           {/* Users Section */}
-          <section>
+          <section className="shadow-gray-700 shadow-md p-5">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Recommendations</h2>
             <p className="opacity-50">Connect with new people and make new friends</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 py-5">
               {FrndsRccmnded.map((frnd: IFriend)=>(
                 <div className="bg-base-200 border border-gray-600 rounded-xl hover:shadow-md transition-shadow p-4 flex flex-col gap-3" key={frnd._id}>
                   <div className="flex items-center gap-3 mb-3">
-                    <Image src={frnd.profilePic && frnd.profilePic.trim() !== "" ? frnd.profilePic : profileImg }
-                      alt="avatar"
-                      width={30}
-                      height={30}
-                      unoptimized
-                      className="rounded-full object-cover"
-                    />
+                    <img  
+                      src={frnd.profilePic?.trim() || profileImg.src} 
+                      alt="Avatar"
+                      className="w-[30px] h-[30px] object-cover rounded-full"
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        if (img.src !== profileImg.src){
+                          img.src = profileImg.src;
+                        }
+                      }} />
                     <h3 className="font-semibold truncate">{frnd.userName}</h3>
                   </div>
                   <p className="opacity-50 text-sm truncate">{frnd?.bio}</p>

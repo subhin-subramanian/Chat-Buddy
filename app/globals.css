@@ -6,8 +6,7 @@ html,body {
   padding: unset;
   height: 100%;
 }
-
-
+ 
   .str-chat__channel-list {
     position: fixed;
     z-index: 1;
