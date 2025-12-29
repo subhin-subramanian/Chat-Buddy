@@ -1,4 +1,4 @@
-import Header from "@/components/page_components/Header"
+import Header from "@/components/Header"
 
 function layout( {children} : {children:React.ReactNode} ) {
 

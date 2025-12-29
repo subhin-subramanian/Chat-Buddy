@@ -1,6 +1,6 @@
 
-import Header from "@/components/page_components/Header"
-import SideBar from "@/components/page_components/SideBar"
+import Header from "@/components/Header"
+import SideBar from "@/components/SideBar"
 import profileImg from '../../assets/profileImg.png'
 import { useQuery } from "@tanstack/react-query";
 import { getMyFriends } from "@/lib/api";

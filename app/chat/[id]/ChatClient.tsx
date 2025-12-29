@@ -1,13 +1,14 @@
 "use client"
-import Header from '@/components/page_components/Header';
-import ChatLoader from '@/components/page_components/PageLoader';
+
+import ChatLoader from '@/components/PageLoader';
 import { getStreamToken } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
+import { Video } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat'
-import { Chat,ChannelList, Channel, MessageList, MessageInput, ChannelHeader, Window, Thread } from 'stream-chat-react';
+import { Chat, Channel, MessageList, MessageInput, ChannelHeader, Window, Thread } from 'stream-chat-react';
 import "stream-chat-react/dist/css/v2/index.css";
-import FriendsList from '../FriendsList';
 
 const streamChatClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!
@@ -81,12 +82,16 @@ function ChatClient({targetUserId}:{targetUserId:string}) {
         <Chat client={streamChatClient} theme="str-chat__theme-dark">
       
           <Channel channel={channel}>
-           
+            <div className="relative w-full">
+              <Link href={`/call/${channel.id}`}>
+                <Video className='absolute top-[3vh] right-[5vh]'/>
+              </Link>
               <Window >
                 <ChannelHeader/>
                 <MessageList/>
                 <MessageInput focus/>
               </Window> 
+            </div>
               
               <Thread /> 
           </Channel>

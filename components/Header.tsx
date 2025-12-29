@@ -4,7 +4,7 @@ import Link from "next/link"
 import Logo from "./Logo"
 import { useQuery} from "@tanstack/react-query"
 import { getMe } from "@/lib/api"
-import profileImg  from '../../assets/profileImg.png'
+import profileImg  from '../assets/profileImg.png'
 import useLogout from "@/hooks/useLogout"
 import { BellIcon, LogOutIcon, CircleUserRound, HomeIcon, 
          Menu, MessagesSquare, Power, Users, X } from "lucide-react"

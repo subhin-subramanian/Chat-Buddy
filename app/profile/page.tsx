@@ -1,7 +1,7 @@
 "use client"
 
-import Header from "@/components/page_components/Header"
-import SideBar from "@/components/page_components/SideBar"
+import Header from "@/components/Header"
+import SideBar from "@/components/SideBar"
 import profileImg from '../../assets/profileImg.png'
 import Image from "next/image"
 import { FormEvent, useEffect, useState } from "react"

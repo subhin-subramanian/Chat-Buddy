@@ -1,6 +1,6 @@
 "use client"
 
-import Logo from '@/components/page_components/Logo'
+import Logo from '@/components/Logo'
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react'
