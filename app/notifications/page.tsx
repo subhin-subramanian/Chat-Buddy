@@ -1,4 +1,4 @@
-
+"use client"
 import Header from "@/components/Header"
 import SideBar from "@/components/SideBar"
 import profileImg from '../../assets/profileImg.png'
