@@ -1,16 +1,18 @@
 import { DBConnection } from "@/lib/db";
-import { verifyToken } from "@/lib/verifyToken";
-import { NextRequest, NextResponse } from "next/server";
+import User from "@/models/User.model";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
+        const currentUserId = (await headers()).get("x-user-id");
         await DBConnection();
-        const token = req.cookies.get("jwt")?.value;
-        if(!token){
-            return NextResponse.json({ message: "No token"}, { status: 401 });
+
+        if(!currentUserId){
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
 
-        const user = verifyToken(token);
+        const user = await User.findById(currentUserId).select("userName bio profilePic");
 
         return NextResponse.json({ user });
     

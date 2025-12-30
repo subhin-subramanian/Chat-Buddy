@@ -36,8 +36,7 @@
 
     return (
       <div className='flex justify-center items-center min-h-screen p-4 pb-15 sm:p-6 md:p-8'>
-          <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100
-          shadow-lg rounded-lg overflow-hidden">
+          <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 shadow-lg rounded-lg overflow-hidden">
             {/* Left Side */}
             <div className="w-full lg:w-1/2 p-4 sm:p-8 flex flex-col space-y-5">
               <Logo/>
